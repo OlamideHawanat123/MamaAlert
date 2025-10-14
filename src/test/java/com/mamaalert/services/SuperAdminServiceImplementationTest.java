@@ -15,6 +15,10 @@ public class SuperAdminServiceImplementationTest {
 
     @Test
     public void testThatSuperAdminCanRegister(){
+
+        System.out.println("Mongo URI: " + System.getProperty("spring.data.mongodb.uri"));
+        System.out.println("Working directory: " + System.getProperty("user.dir"));
+
         RegisterSuperAdminRequest request = new RegisterSuperAdminRequest();
         request.setName("Olamide");
         request.setEmail("raheemhawanat@gmail.com");
