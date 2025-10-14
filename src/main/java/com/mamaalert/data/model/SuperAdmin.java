@@ -1,4 +1,7 @@
 package com.mamaalert.data.model;
 
-public class SuperAdmin {
+import lombok.Data;
+
+@Data
+public class SuperAdmin extends User{
 }
