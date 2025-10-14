@@ -1,6 +1,8 @@
 package com.mamaalert.services;
 
+import com.mamaalert.dtos.requests.RegisterHospitalRequest;
 import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
+import com.mamaalert.dtos.responses.RegisterHospitalResponse;
 import com.mamaalert.dtos.responses.RegisterSuperAdminResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,16 @@ public class SuperAdminServiceImplementationTest {
 
     @Test
     public void testThatSuperAdminCanRegisterHospital(){
+        RegisterHospitalRequest request = new RegisterHospitalRequest();
+        request.setName("Divine Mercy Hospital");
+        request.setEmail("divinemercy@gmail.com");
+        request.setPassword("ola@gmail.com");
+        request.setPhoneNumber("08094564448489");
+
+        RegisterHospitalResponse response = superAdminService.registerHospital(request);
+        assertNotNull(response.getId());
+        assertEquals("Hospital was registered successfully", response.getMessage());
+
 
     }
 }
