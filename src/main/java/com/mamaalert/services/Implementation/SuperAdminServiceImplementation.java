@@ -21,6 +21,8 @@ public class SuperAdminServiceImplementation implements SuperAdminService {
         superAdmin.setPhoneNumber(request.getPhoneNumber());
         superAdmin.setPassword(request.getPassword());
 
+        SuperAdmin savedSuperAdmin = superAdminRepo.save(superAdmin);
+
         RegisterSuperAdminResponse response = new RegisterSuperAdminResponse();
         response.setId(superAdmin.getId());
         response.setMessage("You have been registered successfully");
