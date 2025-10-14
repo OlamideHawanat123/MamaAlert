@@ -22,6 +22,7 @@ public class SuperAdminServiceImplementationTest {
         request.setPassword("Olaola123");
 
         RegisterSuperAdminResponse response = superAdminService.registerSuperAdmin(request);
+        assertNotNull(response);
         assertEquals("You have been registered successfully", response.getMessage());
     }
 }
