@@ -29,4 +29,9 @@ public class SuperAdminServiceImplementationTest {
         assertNotNull(response);
         assertEquals("You have been registered successfully", response.getMessage());
     }
+
+    @Test
+    public void testThatSuperAdminCanRegisterHospital(){
+
+    }
 }
