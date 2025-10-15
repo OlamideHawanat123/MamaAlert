@@ -1,7 +1,9 @@
 package com.mamaalert.controller;
 
+import com.mamaalert.dtos.requests.RegisterDriverAdminRequest;
 import com.mamaalert.dtos.requests.RegisterHospitalRequest;
 import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
+import com.mamaalert.dtos.responses.RegisterDriverAdminResponse;
 import com.mamaalert.dtos.responses.RegisterHospitalResponse;
 import com.mamaalert.dtos.responses.RegisterSuperAdminResponse;
 import com.mamaalert.services.SuperAdminService;
@@ -29,6 +31,12 @@ public class SuperAdminController {
     @PostMapping("registerHospital")
     public ResponseEntity<?> registerHospital(@Valid  @RequestBody RegisterHospitalRequest request){
         RegisterHospitalResponse response = superAdminService.registerHospital(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("registerDriverAdmin")
+    public ResponseEntity<?> registerDriverAdmin(@Valid @RequestBody RegisterDriverAdminRequest request){
+        RegisterDriverAdminResponse response = superAdminService.registerDriverAdmin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

@@ -3,6 +3,7 @@ package com.mamaalert.services;
 import com.mamaalert.dtos.requests.RegisterDriverAdminRequest;
 import com.mamaalert.dtos.requests.RegisterHospitalRequest;
 import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
+import com.mamaalert.dtos.responses.RegisterDriverAdminResponse;
 import com.mamaalert.dtos.responses.RegisterHospitalResponse;
 import com.mamaalert.dtos.responses.RegisterSuperAdminResponse;
 import jakarta.validation.Validation;
@@ -70,6 +71,6 @@ public class SuperAdminServiceImplementationTest {
 
         RegisterDriverAdminResponse response = superAdminService.registerDriverAdmin(request);
         assertNotNull(response.getId());
-        assertEquals("Driver has been registered successfully", response.getMessage());
+        assertEquals("Driver Admin has been registered successfully", response.getMessage());
     }
 }
