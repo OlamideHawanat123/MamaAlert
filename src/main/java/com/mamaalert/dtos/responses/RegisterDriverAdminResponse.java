@@ -1,9 +1,5 @@
 package com.mamaalert.dtos.responses;
 
-import lombok.Data;
+public class RegisterDriverAdminResponse extends RegisterSuperAdminResponse{
 
-@Data
-public class RegisterDriverAdminResponse {
-    private String id;
-    private String message;
 }

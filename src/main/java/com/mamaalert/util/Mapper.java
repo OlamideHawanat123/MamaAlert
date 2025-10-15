@@ -1,10 +1,7 @@
 package com.mamaalert.util;
 
 import com.mamaalert.data.model.*;
-import com.mamaalert.dtos.requests.RegisterDriverAdminRequest;
-import com.mamaalert.dtos.requests.RegisterHospitalRequest;
-import com.mamaalert.dtos.requests.RegisterPatientRequest;
-import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
+import com.mamaalert.dtos.requests.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class Mapper {
@@ -34,7 +31,7 @@ public class Mapper {
         driverAdmin.setName(request.getName());
         driverAdmin.setBranchLocation(request.getBranch());
         driverAdmin.setAddress(request.getAddress());
-        driverAdmin.setPassword(request.getPassword());
+        driverAdmin.setPassword(passwordEncoder.encode(request.getPassword()));
         driverAdmin.setEmail(request.getEmail());
         driverAdmin.setRole(Role.DRIVER_ADMIN);
         driverAdmin.setPhoneNumber(request.getPhoneNumber());
@@ -47,9 +44,21 @@ public class Mapper {
         patient.setRole(Role.PATIENT);
         patient.setName(request.getName());
         patient.setPhoneNumber(request.getPhoneNumber());
-        patient.setPassword(request.getPassword());
+        patient.setPassword(passwordEncoder.encode(request.getPassword()));
         patient.setHospitalId(request.getHospitalId());
         patient.setRelativeNumbers(request.getRelativeNumber());
         return patient;
+    }
+
+    public static Driver mapRequestToDriver(RegisterDriverRequest request, PasswordEncoder passwordEncoder) {
+        Driver driver = new Driver();
+        driver.setName(request.getName());
+        driver.setBranchLocation(request.getBranch());
+        driver.setAddress(request.getAddress());
+        driver.setPassword(passwordEncoder.encode(request.getPassword()));
+        driver.setEmail(request.getEmail());
+        driver.setRole(Role.DRIVER);
+        driver.setPhoneNumber(request.getPhoneNumber());
+        return driver;
     }
 }
