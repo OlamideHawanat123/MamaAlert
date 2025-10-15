@@ -1,8 +1,8 @@
-package com.mamaalert.services;
+package com.mamaalert.services.RegistrationServices;
 
-import com.mamaalert.data.repository.PatientRepo;
 import com.mamaalert.dtos.requests.RegisterPatientRequest;
 import com.mamaalert.dtos.responses.RegisterPatientResponse;
+import com.mamaalert.services.HospitalService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

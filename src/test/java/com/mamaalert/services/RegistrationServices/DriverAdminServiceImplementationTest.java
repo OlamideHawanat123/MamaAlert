@@ -1,7 +1,8 @@
-package com.mamaalert.services;
+package com.mamaalert.services.RegistrationServices;
 
 import com.mamaalert.dtos.requests.RegisterDriverRequest;
 import com.mamaalert.dtos.responses.RegisterDriverResponse;
+import com.mamaalert.services.DriverAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

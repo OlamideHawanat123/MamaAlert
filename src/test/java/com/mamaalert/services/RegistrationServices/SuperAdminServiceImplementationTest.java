@@ -1,4 +1,4 @@
-package com.mamaalert.services;
+package com.mamaalert.services.RegistrationServices;
 
 import com.mamaalert.dtos.requests.RegisterDriverAdminRequest;
 import com.mamaalert.dtos.requests.RegisterHospitalRequest;
@@ -6,6 +6,7 @@ import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
 import com.mamaalert.dtos.responses.RegisterDriverAdminResponse;
 import com.mamaalert.dtos.responses.RegisterHospitalResponse;
 import com.mamaalert.dtos.responses.RegisterSuperAdminResponse;
+import com.mamaalert.services.SuperAdminService;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
