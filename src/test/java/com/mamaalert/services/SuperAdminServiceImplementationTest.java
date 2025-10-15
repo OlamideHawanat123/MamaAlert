@@ -56,4 +56,9 @@ public class SuperAdminServiceImplementationTest {
         assertNotNull(response.getId());
         assertEquals("Hospital was registered successfully", response.getMessage());
     }
+
+    @Test
+    public void testThatSuperAdminCanRegisterDriverAdmin(){
+        RegisterDriverAdminRequest request =
+    }
 }
