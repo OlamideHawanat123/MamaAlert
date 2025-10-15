@@ -2,6 +2,7 @@ package com.mamaalert.services;
 
 import com.mamaalert.data.repository.PatientRepo;
 import com.mamaalert.dtos.requests.RegisterPatientRequest;
+import com.mamaalert.dtos.responses.RegisterPatientResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,9 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HospitalServiceImplementationTest {
     @Autowired
     private HospitalService hospitalService;
-
-    @Autowired
-    private PatientRepo patientRepo;
 
     @Test
     public void testThatHospitalCanRegisterPatient(){

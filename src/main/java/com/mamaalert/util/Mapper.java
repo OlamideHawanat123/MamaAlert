@@ -1,11 +1,9 @@
 package com.mamaalert.util;
 
-import com.mamaalert.data.model.DriverAdmin;
-import com.mamaalert.data.model.Hospital;
-import com.mamaalert.data.model.Role;
-import com.mamaalert.data.model.SuperAdmin;
+import com.mamaalert.data.model.*;
 import com.mamaalert.dtos.requests.RegisterDriverAdminRequest;
 import com.mamaalert.dtos.requests.RegisterHospitalRequest;
+import com.mamaalert.dtos.requests.RegisterPatientRequest;
 import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -41,5 +39,17 @@ public class Mapper {
         driverAdmin.setRole(Role.DRIVER_ADMIN);
         driverAdmin.setPhoneNumber(request.getPhoneNumber());
         return driverAdmin;
+    }
+
+    public static Patient mapRequestToPatient(RegisterPatientRequest request, PasswordEncoder passwordEncoder) {
+        Patient patient = new Patient();
+        patient.setEmail(request.getEmail());
+        patient.setRole(Role.PATIENT);
+        patient.setName(request.getName());
+        patient.setPhoneNumber(request.getPhoneNumber());
+        patient.setPassword(request.getPassword());
+        patient.setHospitalId(request.getHospitalId());
+        patient.setRelativeNumbers(request.getRelativeNumber());
+        return patient;
     }
 }
