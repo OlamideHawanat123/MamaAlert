@@ -1,9 +1,11 @@
 package com.mamaalert.dtos.requests;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class RegisterDriverAdminRequest extends RegisterSuperAdminRequest{
     @NotBlank(message = "Branch is required")
     private String branch;
