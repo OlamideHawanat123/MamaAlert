@@ -1,5 +1,6 @@
 package com.mamaalert.services;
 
+import com.mamaalert.dtos.requests.RegisterDriverAdminRequest;
 import com.mamaalert.dtos.requests.RegisterHospitalRequest;
 import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
 import com.mamaalert.dtos.responses.RegisterHospitalResponse;
@@ -59,6 +60,16 @@ public class SuperAdminServiceImplementationTest {
 
     @Test
     public void testThatSuperAdminCanRegisterDriverAdmin(){
-        RegisterDriverAdminRequest request =
+        RegisterDriverAdminRequest request = new RegisterDriverAdminRequest();
+        request.setName("Olaide");
+        request.setEmail("sha@gmail.com");
+        request.setPassword("Eriife");
+        request.setPhoneNumber("09345678383");
+        request.setAddress("Saba street");
+        request.setBranch("Ikeja");
+
+        RegisterDriverAdminResponse response = superAdminService.registerDriverAdmin(request);
+        assertNotNull(response.getId());
+        assertEquals("Driver has been registered successfully", response.getMessage());
     }
 }
