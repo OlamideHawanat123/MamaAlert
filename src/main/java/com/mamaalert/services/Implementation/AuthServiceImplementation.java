@@ -55,12 +55,9 @@ public class AuthServiceImplementation implements AuthService {
         );
     }
 
-
-
-
-
     // Multi-repo lookup
-    private User findUserByEmail(String email) {
+    @Override
+    public User findUserByEmail(String email) {
         List<UserRepository<? extends User>> repos = List.of(
                 superAdminRepository,
                 hospitalRepository,
