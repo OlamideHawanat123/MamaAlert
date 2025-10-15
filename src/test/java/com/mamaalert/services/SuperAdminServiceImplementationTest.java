@@ -4,16 +4,27 @@ import com.mamaalert.dtos.requests.RegisterHospitalRequest;
 import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
 import com.mamaalert.dtos.responses.RegisterHospitalResponse;
 import com.mamaalert.dtos.responses.RegisterSuperAdminResponse;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class SuperAdminServiceImplementationTest {
     @Autowired
     private SuperAdminService superAdminService;
+
+    private Validator validator;
+
+    @BeforeEach
+    public void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
 
     @Test
     public void testThatSuperAdminCanRegister(){
@@ -39,11 +50,10 @@ public class SuperAdminServiceImplementationTest {
         request.setEmail("divinemercy@gmail.com");
         request.setPassword("ola@gmail.com");
         request.setPhoneNumber("08094564448489");
+        request.setAddress("3, Ajegunle street");
 
         RegisterHospitalResponse response = superAdminService.registerHospital(request);
         assertNotNull(response.getId());
         assertEquals("Hospital was registered successfully", response.getMessage());
-
-
     }
 }

@@ -1,8 +1,11 @@
 package com.mamaalert.controller;
 
+import com.mamaalert.dtos.requests.RegisterHospitalRequest;
 import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
+import com.mamaalert.dtos.responses.RegisterHospitalResponse;
 import com.mamaalert.dtos.responses.RegisterSuperAdminResponse;
 import com.mamaalert.services.SuperAdminService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,5 +24,11 @@ public class SuperAdminController {
         RegisterSuperAdminResponse response = superAdminService.registerSuperAdmin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
+    }
+
+    @PostMapping("registerHospital")
+    public ResponseEntity<?> registerHospital(@Valid  @RequestBody RegisterHospitalRequest request){
+        RegisterHospitalResponse response = superAdminService.registerHospital(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

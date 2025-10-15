@@ -1,6 +1,7 @@
 package com.mamaalert.util;
 
 import com.mamaalert.data.model.Hospital;
+import com.mamaalert.data.model.Role;
 import com.mamaalert.data.model.SuperAdmin;
 import com.mamaalert.dtos.requests.RegisterHospitalRequest;
 import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
@@ -13,15 +14,18 @@ public class Mapper {
         superAdmin.setEmail(request.getEmail());
         superAdmin.setPhoneNumber(request.getPhoneNumber());
         superAdmin.setPassword(passwordEncoder.encode(request.getPassword()));
+        superAdmin.setRole(Role.SUPER_ADMIN);
         return superAdmin;
     }
 
     public static Hospital mapRequestToHospital(RegisterHospitalRequest request, PasswordEncoder passwordEncoder){
         Hospital hospital =  new Hospital();
         hospital.setName(request.getName());
-        hospital.setEmaik(request.getEmail());
+        hospital.setEmail(request.getEmail());
         hospital.setPhoneNumber(request.getPhoneNumber());
         hospital.setPassword(passwordEncoder.encode(request.getPassword()));
-        return Hospital;
+        hospital.setAddress(request.getAddress());
+        hospital.setRole(Role.HOSPITAL);
+        return hospital;
     }
 }

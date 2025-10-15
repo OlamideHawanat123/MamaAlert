@@ -1,6 +1,8 @@
 package com.mamaalert.services.Implementation;
 
+import com.mamaalert.data.model.Hospital;
 import com.mamaalert.data.model.SuperAdmin;
+import com.mamaalert.data.repository.HospitalRepo;
 import com.mamaalert.data.repository.SuperAdminRepo;
 import com.mamaalert.dtos.requests.RegisterHospitalRequest;
 import com.mamaalert.dtos.requests.RegisterSuperAdminRequest;
@@ -18,6 +20,9 @@ public class SuperAdminServiceImplementation implements SuperAdminService {
     private SuperAdminRepo superAdminRepo;
 
     @Autowired
+    private HospitalRepo hospitalRepo;
+
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Override
@@ -26,13 +31,19 @@ public class SuperAdminServiceImplementation implements SuperAdminService {
         SuperAdmin savedSuperAdmin = superAdminRepo.save(superAdmin);
 
         RegisterSuperAdminResponse response = new RegisterSuperAdminResponse();
-        response.setId(superAdmin.getId());
+        response.setId(savedSuperAdmin.getId());
         response.setMessage("You have been registered successfully");
         return response;
     }
 
     @Override
     public RegisterHospitalResponse registerHospital(RegisterHospitalRequest request) {
-        return null;
+        Hospital hospital = Mapper.mapRequestToHospital(request, passwordEncoder);
+        Hospital savedHospital = hospitalRepo.save(hospital);
+
+        RegisterHospitalResponse response = new RegisterHospitalResponse();
+        response.setId(savedHospital.getId());
+        response.setMessage("Hospital was registered successfully");
+        return response;
     }
 }
