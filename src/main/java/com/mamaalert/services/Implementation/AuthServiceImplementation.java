@@ -55,7 +55,6 @@ public class AuthServiceImplementation implements AuthService {
         );
     }
 
-    // Multi-repo lookup
     @Override
     public User findUserByEmail(String email) {
         List<UserRepository<? extends User>> repos = List.of(
@@ -67,7 +66,7 @@ public class AuthServiceImplementation implements AuthService {
         );
 
         return repos.stream()
-                .map(repo -> repo.findByEmail(email)) // Optional<? extends User>
+                .map(repo -> repo.findByEmail(email))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst()

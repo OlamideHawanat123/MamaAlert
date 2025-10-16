@@ -39,42 +39,41 @@ public class AuthController {
     }
 
     @PostMapping("/register/superadmin")
-    public ResponseEntity<?> registerSuperAdmin(@RequestBody RegisterSuperAdminRequest request) {
+    public ResponseEntity<?> registerSuperAdmin(@Valid @RequestBody RegisterSuperAdminRequest request) {
         RegisterSuperAdminResponse response = superAdminService.registerSuperAdmin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/register/hospital")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<?> registerHospital(@RequestBody RegisterHospitalRequest request) {
+    public ResponseEntity<?> registerHospital(@Valid @RequestBody RegisterHospitalRequest request) {
         RegisterHospitalResponse response = superAdminService.registerHospital(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/register/patient")
     @PreAuthorize("hasRole('HOSPITAL')")
-    public ResponseEntity<?> registerPatient(@RequestBody RegisterPatientRequest request) {
+    public ResponseEntity<?> registerPatient(@Valid@RequestBody RegisterPatientRequest request) {
        RegisterPatientResponse response =  hospitalService.registerPatient(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/register/driveradmin")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<?> registerDriverAdmin(@RequestBody RegisterDriverAdminRequest request) {
+    public ResponseEntity<?> registerDriverAdmin(@Valid @RequestBody RegisterDriverAdminRequest request) {
         RegisterDriverAdminResponse response = superAdminService.registerDriverAdmin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/register/driver")
     @PreAuthorize("hasRole('Driver_ADMIN')")
-    public ResponseEntity<?> registerDriver(@RequestBody RegisterDriverRequest request) {
+    public ResponseEntity<?> registerDriver(@Valid @RequestBody RegisterDriverRequest request) {
         RegisterDriverResponse response = driverAdminService.registerDriver(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // login endpoint (single, shared for all roles)
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
