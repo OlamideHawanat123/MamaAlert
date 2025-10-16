@@ -16,19 +16,16 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // You can also load this from application.properties or environment variable
-    private static final String SECRET = "X9sP4tY7qL2rM8vZ1xN5bA6uF3dH9kG7"; // at least 32 chars
-    private static final long EXPIRATION_MS = 1000 * 60 * 60 * 24; // 24 hours
+    private static final String SECRET = "X9sP4tY7qL2rM8vZ1xN5bA6uF3dH9kG7";
+    private static final long EXPIRATION_MS = 1000 * 60 * 60 * 24;
 
     private SecretKey key;
 
     @PostConstruct
     public void init() {
-        // Create a secure key for HS256
         this.key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     }
 
-    // Generate JWT token with email and role claims
     public String generateToken(String email, Role role) {
         return Jwts.builder()
                 .setSubject(email)
@@ -39,17 +36,14 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Extract email (subject) from token
     public String extractEmail(String token) {
         return parseToken(token).getBody().getSubject();
     }
 
-    // Extract role from token
     public String extractRole(String token) {
         return parseToken(token).getBody().get("role", String.class);
     }
 
-    // Validate token for a given user
     public boolean validateToken(String token, String email) {
         try {
             Claims claims = parseToken(token).getBody();
@@ -59,12 +53,10 @@ public class JwtUtil {
         }
     }
 
-    // Check if token is expired
     private boolean isTokenExpired(Claims claims) {
         return claims.getExpiration().before(new Date());
     }
 
-    // Parse the JWT token
     private Jws<Claims> parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)

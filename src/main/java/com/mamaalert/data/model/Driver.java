@@ -13,6 +13,8 @@ import java.util.List;
 public class Driver extends User{
     private String branchLocation;
     private String address;
+    private double latitude;
+    private double longitude;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

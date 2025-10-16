@@ -1,5 +1,6 @@
 package com.mamaalert.data.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -17,6 +18,7 @@ public abstract class User implements UserDetails {
     private String name;
     @Indexed(unique = true)
     private String email;
+    @JsonIgnore
     private String password;
     private String phoneNumber;
     private Role role;

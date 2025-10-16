@@ -4,6 +4,8 @@ import com.mamaalert.data.model.*;
 import com.mamaalert.dtos.requests.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
+
 public class Mapper {
     public static SuperAdmin mapRequestToSuperAdmin(RegisterSuperAdminRequest request, PasswordEncoder passwordEncoder){
         SuperAdmin superAdmin = new SuperAdmin();
@@ -60,5 +62,14 @@ public class Mapper {
         driver.setRole(Role.DRIVER);
         driver.setPhoneNumber(request.getPhoneNumber());
         return driver;
+    }
+
+    public static Emergency mapRequestToEmergency(CreateEmergencyRequest request) {
+        Emergency emergency = new Emergency();
+        emergency.setLatitude(request.getLatitude());
+        emergency.setLongitude(request.getLongitude());
+        emergency.setCreatedAt(LocalDateTime.now());
+        emergency.setStatus(EmergencyStatus.UNRESOLVED);
+        return emergency;
     }
 }

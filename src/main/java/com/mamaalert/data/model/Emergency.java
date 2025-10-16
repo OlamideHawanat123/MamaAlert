@@ -1,21 +1,36 @@
 package com.mamaalert.data.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.mamaalert.data.model.EmergencyStatus;
+import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 
-@Document(collection = "Emegencies")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Document(collection = "emergencies")
 public class Emergency {
+
     @Id
     private String id;
-    private String patientId;
+
+    @DBRef
+    private Patient patient;
+
     private double latitude;
     private double longitude;
-    private EmergencyStatus status;
-    private LocalDateTime timestamp;
 
+    private LocalDateTime createdAt;
+    private LocalDateTime resolvedAt;
+
+    private EmergencyStatus status;
+
+    @DBRef
+    private Driver resolvedBy;
 }
+
