@@ -47,6 +47,20 @@ public class EmergencyServiceImplementation implements EmergencyService {
         return response;
     }
 
+    @Override
+    public void resolveEmergency(String emergencyId, String driverEmail) {
+        Emergency emergency = emergencyRepo.findById(emergencyId)
+                .orElseThrow(() -> new RuntimeException("Emergency not found"));
+
+        Driver driver = driverRepo.findByEmail(driverEmail)
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        emergency.setResolvedBy(driver);
+        emergency.setStatus(EmergencyStatus.RESOLVED);
+        emergency.setResolvedAt(LocalDateTime.now());
+        emergencyRepo.save(emergency);
+    }
+
 
 
     private void notifyRelativesAndDrivers(Emergency emergency) {
@@ -56,10 +70,11 @@ public class EmergencyServiceImplementation implements EmergencyService {
                 + "Time: " + LocalDateTime.now();
 
         if (emergency.getPatient().getRelativeNumbers() != null) {
-            emergency.getPatient().getRelativeNumbers().forEach(relative -> {
-                smsService.sendSms(relative.getPhoneNumber(), message);
+            emergency.getPatient().getRelativeNumbers().forEach(phoneNumber -> {
+                smsService.sendSms(phoneNumber, message);
             });
         }
+
 
         List<Driver> nearbyDrivers = driverRepo.findAll().stream()
                 .filter(driver -> distance(
@@ -86,19 +101,7 @@ public class EmergencyServiceImplementation implements EmergencyService {
         return R * c;
     }
 
-    @Override
-    public void resolveEmergency(String emergencyId, String driverEmail) {
-        Emergency emergency = emergencyRepo.findById(emergencyId)
-                .orElseThrow(() -> new RuntimeException("Emergency not found"));
 
-        Driver driver = driverRepo.findByEmail(driverEmail)
-                .orElseThrow(() -> new RuntimeException("Driver not found"));
-
-        emergency.setResolvedBy(driver);
-        emergency.setStatus(EmergencyStatus.RESOLVED);
-        emergency.setResolvedAt(LocalDateTime.now());
-        emergencyRepo.save(emergency);
-    }
 
     @Scheduled(fixedRate = 600000)
     public void resendAlertsIfUnresolved() {

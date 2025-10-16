@@ -2,12 +2,13 @@ package com.mamaalert.util;
 
 import com.mamaalert.data.model.*;
 import com.mamaalert.dtos.requests.*;
+import com.mamaalert.dtos.responses.CreateEmergencyResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
 public class Mapper {
-    public static SuperAdmin mapRequestToSuperAdmin(RegisterSuperAdminRequest request, PasswordEncoder passwordEncoder){
+    public static SuperAdmin mapRequestToSuperAdmin(RegisterSuperAdminRequest request, PasswordEncoder passwordEncoder) {
         SuperAdmin superAdmin = new SuperAdmin();
         superAdmin.setName(request.getName());
         superAdmin.setEmail(request.getEmail());
@@ -17,8 +18,8 @@ public class Mapper {
         return superAdmin;
     }
 
-    public static Hospital mapRequestToHospital(RegisterHospitalRequest request, PasswordEncoder passwordEncoder){
-        Hospital hospital =  new Hospital();
+    public static Hospital mapRequestToHospital(RegisterHospitalRequest request, PasswordEncoder passwordEncoder) {
+        Hospital hospital = new Hospital();
         hospital.setName(request.getName());
         hospital.setEmail(request.getEmail());
         hospital.setPhoneNumber(request.getPhoneNumber());
@@ -72,4 +73,5 @@ public class Mapper {
         emergency.setStatus(EmergencyStatus.UNRESOLVED);
         return emergency;
     }
+
 }
