@@ -29,7 +29,10 @@ public class EmergencyServiceImplementation implements EmergencyService {
     @Override
     public CreateEmergencyResponse createEmergency(CreateEmergencyRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
+
+        // Extract the actual User object from the authentication principal
+        User user = (User) auth.getPrincipal();
+        String email = user.getEmail();
 
         Patient patient = patientRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Patient not found or not logged in"));
@@ -46,6 +49,7 @@ public class EmergencyServiceImplementation implements EmergencyService {
         response.setTimestamp(LocalDateTime.now());
         return response;
     }
+
 
     @Override
     public void resolveEmergency(String emergencyId, String driverEmail) {
@@ -64,17 +68,23 @@ public class EmergencyServiceImplementation implements EmergencyService {
 
 
     private void notifyRelativesAndDrivers(Emergency emergency) {
+        Patient patient = emergency.getPatient();
+        if (patient == null) {
+            // log warning and skip this emergency
+            System.out.println("Emergency " + emergency.getId() + " has no patient assigned. Skipping alert.");
+            return;
+        }
+
         String message = "🚨 EMERGENCY ALERT 🚨\n"
-                + "Patient: " + emergency.getPatient().getName() + "\n"
+                + "Patient: " + patient.getName() + "\n"
                 + "Location: " + emergency.getLatitude() + ", " + emergency.getLongitude() + "\n"
                 + "Time: " + LocalDateTime.now();
 
-        if (emergency.getPatient().getRelativeNumbers() != null) {
+        if (patient.getRelativeNumbers() != null) {
             emergency.getPatient().getRelativeNumbers().forEach(phoneNumber -> {
-                smsService.sendSms(phoneNumber, message);
+                smsService.sendSms(formatPhoneNumber(phoneNumber), message);
             });
         }
-
 
         List<Driver> nearbyDrivers = driverRepo.findAll().stream()
                 .filter(driver -> distance(
@@ -85,10 +95,21 @@ public class EmergencyServiceImplementation implements EmergencyService {
                 )
                 .toList();
 
-        nearbyDrivers.forEach(driver -> {
-            smsService.sendSms(driver.getPhoneNumber(), message);
-        });
+        nearbyDrivers.forEach(driver -> smsService.sendSms(driver.getPhoneNumber(), message));
     }
+
+    private String formatPhoneNumber(String phone) {
+        if (!phone.startsWith("+")) {
+            // Add country code for Nigeria
+            if (phone.startsWith("0")) {
+                phone = "+234" + phone.substring(1);
+            } else {
+                phone = "+234" + phone;
+            }
+        }
+        return phone;
+    }
+
 
     private double distance(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371; // Earth radius
@@ -106,7 +127,13 @@ public class EmergencyServiceImplementation implements EmergencyService {
     @Scheduled(fixedRate = 600000)
     public void resendAlertsIfUnresolved() {
         List<Emergency> unresolved = emergencyRepo.findByStatus(EmergencyStatus.UNRESOLVED);
-        unresolved.forEach(this::notifyRelativesAndDrivers);
+        unresolved.forEach(emergency -> {
+            if (emergency.getPatient() != null) {
+                notifyRelativesAndDrivers(emergency);
+            } else {
+                System.out.println("Skipping emergency " + emergency.getId() + " (no patient linked)");
+            }
+        });
     }
 }
 

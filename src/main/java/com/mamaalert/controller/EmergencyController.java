@@ -17,9 +17,9 @@ public class EmergencyController {
     @Autowired
     private EmergencyService emergencyService;
 
-    @PostMapping
+    @PostMapping("createEmergency")
     @PreAuthorize("hasRole('PATIENT')")
-    public ResponseEntity<?> createEmergency(CreateEmergencyRequest request){
+    public ResponseEntity<?> createEmergency(@RequestBody CreateEmergencyRequest request){
         CreateEmergencyResponse response = emergencyService.createEmergency(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

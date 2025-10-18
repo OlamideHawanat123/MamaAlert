@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true) // ✅ Enables @PreAuthorize, @PostAuthorize, etc.
+@EnableMethodSecurity(prePostEnabled = true) // Enables @PreAuthorize, @PostAuthorize
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
@@ -28,11 +28,27 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers("/auth/login", "/auth/register/superadmin").permitAll()
+
+                        // SuperAdmin-only endpoints
+                        .requestMatchers("/auth/register/hospital", "/auth/register/driveradmin")
+                        .hasRole("SUPER_ADMIN")
+
+                        // Hospital-only endpoints
+                        .requestMatchers("/auth/register/patient").hasRole("HOSPITAL")
+
+                        // DriverAdmin-only endpoints
+                        .requestMatchers("/auth/register/driver").hasRole("DRIVER_ADMIN")
+
+                        .requestMatchers("/patient/createEmergency").hasRole("PATIENT")
+
+                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+        // Add JWT filter before Spring Security's authentication filter
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
