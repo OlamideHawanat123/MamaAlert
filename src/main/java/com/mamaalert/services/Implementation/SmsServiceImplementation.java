@@ -6,48 +6,77 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class SmsServiceImplementation implements SmsService {
 
-    @Value("${termii.api.key}")
+    @Value("${sendchamp.api.key}")
     private String apiKey;
 
-    @Value("${termii.api.url}")
-    private String termiiUrl;
-
+    private static final String SENDCHAMP_URL = "https://api.sendchamp.com/api/v1/sms/send";
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public void sendSms(String to, String message) {
-        // ✅ Ensure the phone number is in +234 format
-        if (to.startsWith("0")) {
-            to = "+234" + to.substring(1);
-        } else if (!to.startsWith("+")) {
-            to = "+234" + to;
+    public boolean sendSms(String to, String message) {
+        try {
+            String formattedPhone = formatPhoneForSendChamp(to);
+            if (formattedPhone == null) {
+                System.err.println("❌ Invalid phone number: " + to);
+                return false;
+            }
+
+            System.out.println("🚀 Sending to Airtel: " + formattedPhone);
+            System.out.println("💬 Message: " + message);
+
+            String requestBody = String.format(
+                    "to=%s&message=%s&sender_name=%s&route=%s",
+                    formattedPhone,
+                    URLEncoder.encode(message, StandardCharsets.UTF_8.toString()),
+                    "SC-OTP",  // Pre-approved for Airtel
+                    "dnd"
+            );
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            headers.set("Authorization", "Bearer " + apiKey);
+            headers.set("Accept", "application/json");
+
+            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    SENDCHAMP_URL, HttpMethod.POST, entity, String.class
+            );
+
+            System.out.println("📨 Response: " + response.getBody());
+
+            boolean success = response.getBody() != null &&
+                    response.getBody().contains("\"status\":\"success\"");
+
+            if (success) {
+                System.out.println("✅ SMS sent to Airtel successfully!");
+            } else {
+                System.err.println("❌ SMS failed");
+            }
+
+            return success;
+
+        } catch (Exception e) {
+            System.err.println("💥 SMS Error: " + e.getMessage());
+            return false;
         }
+    }
 
-        // Build request body
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("to", to);
-        requestBody.put("from", "MamaAlert"); // your approved sender ID or "TERMII" for now
-        requestBody.put("sms", message);
-        requestBody.put("type", "plain");
-        requestBody.put("channel", "generic");
-        requestBody.put("api_key", apiKey);
+    private String formatPhoneForSendChamp(String phone) {
+        if (phone == null) return null;
+        String digits = phone.replaceAll("[^0-9]", "");
 
-        // Set headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        // Convert 07010080477 → 2347010080477
+        if (digits.startsWith("234") && digits.length() == 13) return digits;
+        if (digits.startsWith("0") && digits.length() == 11) return "234" + digits.substring(1);
+        if (digits.length() == 10) return "234" + digits;
 
-        // Send request
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<String> response =
-                restTemplate.postForEntity(termiiUrl, entity, String.class);
-
-        System.out.println("Termii response: " + response.getBody());
+        System.err.println("❌ Invalid format: " + phone + " → " + digits);
+        return null;
     }
 }

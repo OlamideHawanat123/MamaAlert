@@ -50,7 +50,6 @@ public class EmergencyServiceImplementation implements EmergencyService {
         return response;
     }
 
-
     @Override
     public void resolveEmergency(String emergencyId, String driverEmail) {
         Emergency emergency = emergencyRepo.findById(emergencyId)
@@ -65,75 +64,105 @@ public class EmergencyServiceImplementation implements EmergencyService {
         emergencyRepo.save(emergency);
     }
 
-
-
     private void notifyRelativesAndDrivers(Emergency emergency) {
         Patient patient = emergency.getPatient();
         if (patient == null) {
-            // log warning and skip this emergency
-            System.out.println("Emergency " + emergency.getId() + " has no patient assigned. Skipping alert.");
+            System.out.println("⚠️ Emergency " + emergency.getId() + " has no patient assigned. Skipping alert.");
             return;
         }
 
-        String message = "🚨 EMERGENCY ALERT 🚨\n"
-                + "Patient: " + patient.getName() + "\n"
-                + "Location: " + emergency.getLatitude() + ", " + emergency.getLongitude() + "\n"
-                + "Time: " + LocalDateTime.now();
+        // Create emergency message
+        String emergencyMessage = createEmergencyMessage(patient, emergency);
 
-        if (patient.getRelativeNumbers() != null) {
-            emergency.getPatient().getRelativeNumbers().forEach(phoneNumber -> {
-                smsService.sendSms(formatPhoneNumber(phoneNumber), message);
+        System.out.println("🚨 Notifying relatives and drivers for emergency: " + emergency.getId());
+
+        // Notify relatives
+        if (patient.getRelativeNumbers() != null && !patient.getRelativeNumbers().isEmpty()) {
+            System.out.println("👨‍👩‍👧‍👦 Notifying " + patient.getRelativeNumbers().size() + " relatives");
+
+            patient.getRelativeNumbers().forEach(phoneNumber -> {
+                System.out.println("📞 Notifying relative: " + phoneNumber);
+                boolean sent = smsService.sendSms(phoneNumber, emergencyMessage);
+                System.out.println("📤 Relative notification " + (sent ? "✅" : "❌"));
             });
+        } else {
+            System.out.println("⚠️ No relatives to notify for patient: " + patient.getName());
         }
 
-        List<Driver> nearbyDrivers = driverRepo.findAll().stream()
-                .filter(driver -> distance(
-                        emergency.getLatitude(),
-                        emergency.getLongitude(),
-                        driver.getLatitude(),
-                        driver.getLongitude()) <= 10
-                )
+        // Notify nearby drivers
+        List<Driver> nearbyDrivers = findNearbyDrivers(emergency);
+        System.out.println("🚗 Found " + nearbyDrivers.size() + " nearby drivers");
+
+        nearbyDrivers.forEach(driver -> {
+            System.out.println("📞 Notifying driver: " + driver.getName() + " - " + driver.getPhoneNumber());
+            boolean sent = smsService.sendSms(driver.getPhoneNumber(), emergencyMessage);
+            System.out.println("📤 Driver notification " + (sent ? "✅" : "❌"));
+
+            // Optional: Add driver-specific message
+            String driverMessage = emergencyMessage + "\n\nPlease proceed to location immediately!";
+            smsService.sendSms(driver.getPhoneNumber(), driverMessage);
+        });
+
+        System.out.println("🎯 Emergency notification process completed");
+    }
+
+    private String createEmergencyMessage(Patient patient, Emergency emergency) {
+        return "🚨 EMERGENCY ALERT - MAMAALERT 🚨\n\n" +
+                "Patient: " + patient.getName() + "\n" +
+                "Location: " + emergency.getLatitude() + ", " + emergency.getLongitude() + "\n" +
+                "Time: " + LocalDateTime.now() + "\n\n" +
+                "Please respond immediately!";
+    }
+
+    private List<Driver> findNearbyDrivers(Emergency emergency) {
+        return driverRepo.findAll().stream()
+                .filter(driver -> isDriverNearby(emergency, driver))
+                .limit(5) // Limit to 5 nearest drivers
                 .toList();
-
-        nearbyDrivers.forEach(driver -> smsService.sendSms(driver.getPhoneNumber(), message));
     }
 
-    private String formatPhoneNumber(String phone) {
-        if (!phone.startsWith("+")) {
-            // Add country code for Nigeria
-            if (phone.startsWith("0")) {
-                phone = "+234" + phone.substring(1);
-            } else {
-                phone = "+234" + phone;
-            }
-        }
-        return phone;
+    private boolean isDriverNearby(Emergency emergency, Driver driver) {
+        double distance = calculateDistance(
+                emergency.getLatitude(),
+                emergency.getLongitude(),
+                driver.getLatitude(),
+                driver.getLongitude()
+        );
+
+        boolean isNearby = distance <= 10.0; // Within 10km
+        System.out.println("📍 Driver " + driver.getName() + " distance: " +
+                String.format("%.2f", distance) + "km - " +
+                (isNearby ? "✅ Nearby" : "❌ Too far"));
+
+        return isNearby;
     }
 
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Earth radius in kilometers
 
-    private double distance(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371; // Earth radius
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
+
         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
 
-
-
-    @Scheduled(fixedRate = 600000)
-    public void resendAlertsIfUnresolved() {
-        List<Emergency> unresolved = emergencyRepo.findByStatus(EmergencyStatus.UNRESOLVED);
-        unresolved.forEach(emergency -> {
-            if (emergency.getPatient() != null) {
-                notifyRelativesAndDrivers(emergency);
-            } else {
-                System.out.println("Skipping emergency " + emergency.getId() + " (no patient linked)");
-            }
-        });
-    }
+//    @Scheduled(fixedRate = 600000) // Every 10 minutes
+//    public void resendAlertsIfUnresolved() {
+//        List<Emergency> unresolved = emergencyRepo.findByStatus(EmergencyStatus.UNRESOLVED);
+//        System.out.println("🔄 Checking " + unresolved.size() + " unresolved emergencies");
+//
+//        unresolved.forEach(emergency -> {
+//            if (emergency.getPatient() != null) {
+//                System.out.println("🔄 Resending alerts for emergency: " + emergency.getId());
+//                notifyRelativesAndDrivers(emergency);
+//            } else {
+//                System.out.println("⚠️ Skipping emergency " + emergency.getId() + " (no patient linked)");
+//            }
+//        });
+//    }
 }
-

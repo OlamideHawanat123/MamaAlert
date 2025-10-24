@@ -32,6 +32,4 @@ public class EmergencyController {
         emergencyService.resolveEmergency(id, driverEmail);
         return ResponseEntity.ok("Emergency resolved successfully");
     }
-
-
 }
