@@ -66,7 +66,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/driver")
-    @PreAuthorize("hasRole('Driver_ADMIN')")
+    @PreAuthorize("hasRole('DRIVER_ADMIN')")
     public ResponseEntity<?> registerDriver(@Valid @RequestBody RegisterDriverRequest request) {
         RegisterDriverResponse response = driverAdminService.registerDriver(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

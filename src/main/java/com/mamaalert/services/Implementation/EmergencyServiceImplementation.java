@@ -6,10 +6,9 @@ import com.mamaalert.dtos.requests.CreateEmergencyRequest;
 import com.mamaalert.dtos.responses.CreateEmergencyResponse;
 import com.mamaalert.data.model.EmergencyStatus;
 import com.mamaalert.services.EmergencyService;
-import com.mamaalert.services.SmsService;
+import com.mamaalert.services.WhatsAppService;
 import com.mamaalert.util.Mapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ public class EmergencyServiceImplementation implements EmergencyService {
     private final EmergencyRepo emergencyRepo;
     private final PatientRepo patientRepo;
     private final DriverRepo driverRepo;
-    private final SmsService smsService;
+    private final WhatsAppService whatsAppService;
 
     @Override
     public CreateEmergencyResponse createEmergency(CreateEmergencyRequest request) {
@@ -82,7 +81,7 @@ public class EmergencyServiceImplementation implements EmergencyService {
 
             patient.getRelativeNumbers().forEach(phoneNumber -> {
                 System.out.println("📞 Notifying relative: " + phoneNumber);
-                boolean sent = smsService.sendSms(phoneNumber, emergencyMessage);
+                boolean sent = whatsAppService.sendSms(phoneNumber, emergencyMessage);
                 System.out.println("📤 Relative notification " + (sent ? "✅" : "❌"));
             });
         } else {
@@ -95,12 +94,12 @@ public class EmergencyServiceImplementation implements EmergencyService {
 
         nearbyDrivers.forEach(driver -> {
             System.out.println("📞 Notifying driver: " + driver.getName() + " - " + driver.getPhoneNumber());
-            boolean sent = smsService.sendSms(driver.getPhoneNumber(), emergencyMessage);
+            boolean sent = whatsAppService.sendSms(driver.getPhoneNumber(), emergencyMessage);
             System.out.println("📤 Driver notification " + (sent ? "✅" : "❌"));
 
             // Optional: Add driver-specific message
             String driverMessage = emergencyMessage + "\n\nPlease proceed to location immediately!";
-            smsService.sendSms(driver.getPhoneNumber(), driverMessage);
+            whatsAppService.sendSms(driver.getPhoneNumber(), driverMessage);
         });
 
         System.out.println("🎯 Emergency notification process completed");
