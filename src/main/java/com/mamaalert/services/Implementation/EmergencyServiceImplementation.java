@@ -9,6 +9,7 @@ import com.mamaalert.services.EmergencyService;
 import com.mamaalert.services.WhatsAppService;
 import com.mamaalert.util.Mapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -75,7 +76,6 @@ public class EmergencyServiceImplementation implements EmergencyService {
 
         System.out.println("🚨 Notifying relatives and drivers for emergency: " + emergency.getId());
 
-        // Notify relatives
         if (patient.getRelativeNumbers() != null && !patient.getRelativeNumbers().isEmpty()) {
             System.out.println("👨‍👩‍👧‍👦 Notifying " + patient.getRelativeNumbers().size() + " relatives");
 
@@ -88,7 +88,7 @@ public class EmergencyServiceImplementation implements EmergencyService {
             System.out.println("⚠️ No relatives to notify for patient: " + patient.getName());
         }
 
-        // Notify nearby drivers
+
         List<Driver> nearbyDrivers = findNearbyDrivers(emergency);
         System.out.println("🚗 Found " + nearbyDrivers.size() + " nearby drivers");
 
@@ -97,7 +97,6 @@ public class EmergencyServiceImplementation implements EmergencyService {
             boolean sent = whatsAppService.sendSms(driver.getPhoneNumber(), emergencyMessage);
             System.out.println("📤 Driver notification " + (sent ? "✅" : "❌"));
 
-            // Optional: Add driver-specific message
             String driverMessage = emergencyMessage + "\n\nPlease proceed to location immediately!";
             whatsAppService.sendSms(driver.getPhoneNumber(), driverMessage);
         });
@@ -116,7 +115,7 @@ public class EmergencyServiceImplementation implements EmergencyService {
     private List<Driver> findNearbyDrivers(Emergency emergency) {
         return driverRepo.findAll().stream()
                 .filter(driver -> isDriverNearby(emergency, driver))
-                .limit(5) // Limit to 5 nearest drivers
+                .limit(5)
                 .toList();
     }
 
@@ -128,7 +127,7 @@ public class EmergencyServiceImplementation implements EmergencyService {
                 driver.getLongitude()
         );
 
-        boolean isNearby = distance <= 10.0; // Within 10km
+        boolean isNearby = distance <= 10.0;
         System.out.println("📍 Driver " + driver.getName() + " distance: " +
                 String.format("%.2f", distance) + "km - " +
                 (isNearby ? "✅ Nearby" : "❌ Too far"));
@@ -137,7 +136,7 @@ public class EmergencyServiceImplementation implements EmergencyService {
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371; // Earth radius in kilometers
+        final int R = 6371;
 
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
@@ -150,18 +149,18 @@ public class EmergencyServiceImplementation implements EmergencyService {
         return R * c;
     }
 
-//    @Scheduled(fixedRate = 600000) // Every 10 minutes
-//    public void resendAlertsIfUnresolved() {
-//        List<Emergency> unresolved = emergencyRepo.findByStatus(EmergencyStatus.UNRESOLVED);
-//        System.out.println("🔄 Checking " + unresolved.size() + " unresolved emergencies");
-//
-//        unresolved.forEach(emergency -> {
-//            if (emergency.getPatient() != null) {
-//                System.out.println("🔄 Resending alerts for emergency: " + emergency.getId());
-//                notifyRelativesAndDrivers(emergency);
-//            } else {
-//                System.out.println("⚠️ Skipping emergency " + emergency.getId() + " (no patient linked)");
-//            }
-//        });
-//    }
+    @Scheduled(fixedRate = 600000)
+    public void resendAlertsIfUnresolved() {
+        List<Emergency> unresolved = emergencyRepo.findByStatus(EmergencyStatus.UNRESOLVED);
+        System.out.println("🔄 Checking " + unresolved.size() + " unresolved emergencies");
+
+        unresolved.forEach(emergency -> {
+            if (emergency.getPatient() != null) {
+                System.out.println("🔄 Resending alerts for emergency: " + emergency.getId());
+                notifyRelativesAndDrivers(emergency);
+            } else {
+                System.out.println("⚠️ Skipping emergency " + emergency.getId() + " (no patient linked)");
+            }
+        });
+    }
 }

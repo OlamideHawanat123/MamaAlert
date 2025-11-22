@@ -35,6 +35,7 @@ public class SuperAdminServiceImplementation implements SuperAdminService {
     @Override
     public RegisterSuperAdminResponse registerSuperAdmin(RegisterSuperAdminRequest request) {
         if(superAdminRepo.count() == 1) throw new IllegalArgumentException("You cannot register for the role of a super admin!");
+
         SuperAdmin superAdmin = Mapper.mapRequestToSuperAdmin(request, passwordEncoder);
         SuperAdmin savedSuperAdmin = superAdminRepo.save(superAdmin);
 
