@@ -95,10 +95,7 @@ public class WhatsAppServiceImplementation implements WhatsAppService {
     private String formatPhoneForWhatsApp(String phone) {
         if (phone == null) return null;
 
-        // Remove all non-digit characters
         String digits = phone.replaceAll("[^0-9]", "");
-
-        // Handle different formats
         if (digits.startsWith("234") && digits.length() == 13) {
             return digits + "@c.us";
         } else if (digits.startsWith("0") && digits.length() == 11) {
@@ -106,7 +103,6 @@ public class WhatsAppServiceImplementation implements WhatsAppService {
         } else if (digits.length() == 10) {
             return "234" + digits + "@c.us";
         } else if (digits.startsWith("234") && digits.length() > 13) {
-            // In case there are extra digits, take first 13
             return digits.substring(0, 13) + "@c.us";
         }
 

@@ -30,7 +30,6 @@ public class EmergencyServiceImplementation implements EmergencyService {
     public CreateEmergencyResponse createEmergency(CreateEmergencyRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        // Extract the actual User object from the authentication principal
         User user = (User) auth.getPrincipal();
         String email = user.getEmail();
 
@@ -71,7 +70,6 @@ public class EmergencyServiceImplementation implements EmergencyService {
             return;
         }
 
-        // Create emergency message
         String emergencyMessage = createEmergencyMessage(patient, emergency);
 
         System.out.println("🚨 Notifying relatives and drivers for emergency: " + emergency.getId());

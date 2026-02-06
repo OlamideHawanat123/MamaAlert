@@ -15,6 +15,7 @@ public class Driver extends User{
     private String address;
     private double latitude;
     private double longitude;
+    public String plateNuumber;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

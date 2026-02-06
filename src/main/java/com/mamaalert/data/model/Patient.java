@@ -20,6 +20,8 @@ public class Patient extends User{
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + getRole().name()));
+
     }
+
 
 }

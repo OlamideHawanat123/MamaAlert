@@ -7,7 +7,6 @@ import com.mamaalert.services.DriverAdminService;
 import com.mamaalert.services.HospitalService;
 import com.mamaalert.services.SuperAdminService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,6 +49,7 @@ public class AuthController {
         RegisterHospitalResponse response = superAdminService.registerHospital(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 
     @PostMapping("/register/patient")
     @PreAuthorize("hasRole('HOSPITAL')")

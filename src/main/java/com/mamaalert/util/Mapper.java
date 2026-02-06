@@ -2,7 +2,6 @@ package com.mamaalert.util;
 
 import com.mamaalert.data.model.*;
 import com.mamaalert.dtos.requests.*;
-import com.mamaalert.dtos.responses.CreateEmergencyResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;

@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class AuthServiceImplementationTest {
+
     @Autowired
     private AuthService authService;
 
@@ -41,6 +42,5 @@ public class AuthServiceImplementationTest {
         assertNotNull(response.getToken());
         assertEquals("Login successful", response.getMessage());
     }
-
 
 }

@@ -39,7 +39,6 @@ public abstract class User implements UserDetails {
     @Override
     public boolean isEnabled() { return true; }
 
-    // Subclasses must implement this to provide authorities
     @Override
     public abstract Collection<? extends GrantedAuthority> getAuthorities();
 }
